@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Load error-handler.js script before other scripts -->
+    <script src="error-handler.js"></script>
+
+    <!-- Load required PyScript packages -->
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"onerror=scriptLoadFailure('pyscript.js')></script>
+
+
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"
+    ></script>
+
+    <py-env>
+        - paths:
+            - ./convert_model.py
+    </py-env>
+
+    <title>Let's change the photo</title>
+
+    <style>
+        .mytitle {
+            background-color: green;
+            width: 100%;
+            height: 200px;
+
+            /* Darker Background */
+            background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://i.etsystatic.com/20510434/c/2250/1788/0/865/il/8d17ef/3516197083/il_340x270.3516197083_gg4l.jpg");
+            background-position: center;
+            background-size: cover;
+
+            /* Center Align */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upload_img {
+            max-width: 700px;
+            width: 95%;
+            margin: 10px 0px 10px 430px;
+
+            box-shadow: 0px 0px 3px 0px gray;
+            padding: 20px;
+
+            /*display: none;*/
+        }
+
+        .imgs {
+            max-width: 700px;
+            width: 95%;
+            margin: 10px 0px 50px 430px;
+
+            box-shadow: 0px 0px 3px 0px gray;
+            padding: 20px;
+
+            /*display: none;*/
+        }
+
+        .img_show>img {
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+    <script>
+        function convert_img() {
+            //("in")
+            $.ajax({
+                type: "POST",
+                url: "/convert_img",
+                data: {
+                    //img_index_give: img_index
+                },
+                success: function (response) {
+                   let file_name = response['file_name'];
+                   let temp_html =`<img src="/static/${file_name}">`;
+
+                   $('#result_img').append(temp_html);
+                },
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="mytitle">
+    <h1>Customise Letter Writting Paper</h1>
+    <button id="button">Webcam gogo</button>
+</div>
+
+<div class="upload_img">
+    <h4 style="color: red">Submit an image for the conversion</h4>
+    <p>
+    <form action="/submit_img" method="POST" enctype="multipart/form-data" id="submit_gal">
+<!--        <input type="text" name="title" value="Title (Max 5 words)">-->
+<!--        <input type="text" class="form-control" id="title" placeholder="Title (Max 5 words)"/>-->
+        <input type="file" name="file" value="find img"/>
+        <input type="submit" value="Submit Image" class="btn btn-dark"/>
+    </form>
+</div>
+<p></p>
+<div class="imgs" , id="post-box">
+    <div class="img_display">
+        <h4> Conversion Example</h4>
+        <div class="img_show">
+            <img src="/static/콜로세움원본.png">
+            <img src="/static/콜로세움변형.png">
+        </div>
+        <p></p>
+        <button type="button" class="btn btn-secondary" pys-onClick="add">Convert</button>
+        <p></p>
+        <div class="img_show" id="result_img">
+            <py-script>
+                from convert_model import add
+                convert_img()
+                result_img = Element('result_img')
+                result_img.element.innerText=result
+                result_img.clear()
+            </py-script>
+        </div>
+            <a href="/download_img">
+                <button type="button" class="btn btn-secondary">Download</button>
+            </a>
+    </div>
+</div>
+</body>
+</html>
